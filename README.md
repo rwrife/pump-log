@@ -127,11 +127,12 @@ a current dependency — no foldable SDK APIs are used or assumed today.
 
 ## Current status & milestones
 
-**Status: documentation & backlog scaffold.** No Swift project, build, test suite,
-device result, archive, or TestFlight binary exists yet.
+**Status: native skeleton landed.** `PumpLog.xcodeproj`, the pure-Swift
+`Packages/PumpKit` package, pinned Linux + macOS CI, and the launch XCUITest
+smoke exist. No product features, archive, or TestFlight binary yet.
 
 1. ✅ Repo scaffold (docs, toolchain pin, backlog).
-2. Swift package domain core (PumpKit) + skeleton app + pinned CI (issue #1).
+2. ✅ Swift package domain core (PumpKit) + skeleton app + pinned CI (issue #1).
 3. GRDB store + migrations + fixtures (issue #2).
 4. Fill/service ledgers + economy/cost engines with unknown-safe semantics (issues #3–4).
 5. Accessible UI + workspace layout seam (issues #5–6).
