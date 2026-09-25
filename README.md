@@ -85,8 +85,8 @@ unknown-safe gaps, everything local.
 
 ## Non-goals (explicit)
 
-- No cross-platform or hybrid frameworks: no Flutter, React Native, Expo, Kotlin
-  Multiplatform, .NET MAUI, Unity, or equivalents. Native Swift (SwiftUI/UIKit) only.
+- No cross-platform or hybrid frameworks: no Flutter, React Native, Expo,
+  Kotlin Multiplatform, .NET MAUI, Unity, or equivalents. Native Swift (SwiftUI/UIKit) only.
 - No Android and no native iPad support (iPhone-only, `TARGETED_DEVICE_FAMILY = 1`;
   iPad requires explicit user opt-in).
 - No accounts, cloud sync, server backend, analytics, ads, trackers, or subscriptions.

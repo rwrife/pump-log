@@ -19,8 +19,8 @@ ledger. Core objects:
 
 Out of scope: everything in README "Non-goals" (accounts, network, GPS, OCR, tax
 exports, maintenance-database content, repair advice, Android, iPad, and all
-cross-platform/hybrid frameworks — no Flutter, React Native, Expo, Kotlin
-Multiplatform, .NET MAUI, Unity).
+cross-platform/hybrid frameworks — no Flutter, React Native, Expo,
+Kotlin Multiplatform, .NET MAUI, Unity.
 
 ## Architecture
 
