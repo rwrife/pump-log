@@ -1,0 +1,36 @@
+# macOS
+.DS_Store
+
+# Python helper-script bytecode (Scripts/)
+__pycache__/
+*.pyc
+
+# Xcode
+xcuserdata/
+*.xcuserstate
+DerivedData/
+build/
+*.xcresult/
+
+# Swift Package Manager
+.build/
+.swiftpm/
+Package.resolved.lock
+
+# Test / coverage artifacts
+*.gcda
+*.gcno
+coverage/
+Coverage/
+
+# Local signing material (never commit)
+*.p8
+*.p12
+*.mobileprovision
+*.provisionprofile
+*.cer
+asc_private/
+
+# Editors
+.vscode/
+.idea/
