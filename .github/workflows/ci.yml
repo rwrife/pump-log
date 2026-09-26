@@ -19,7 +19,7 @@ jobs:
     container:
       image: swift:6.2-noble
     steps:
-      - uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683
+      - uses: actions/checkout@fbc6f3992d24b796d5a048ff273f7fcc4a7b6c09
       - name: Install sqlite dev package for GRDB on Linux
         run: |
           apt-get update
@@ -50,7 +50,7 @@ jobs:
       TARGET_SHA: ${{ github.event.pull_request.head.sha || github.sha }}
     steps:
       - name: Check out the exact triggering commit
-        uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683
+        uses: actions/checkout@fbc6f3992d24b796d5a048ff273f7fcc4a7b6c09
         with:
           ref: ${{ env.TARGET_SHA }}
           fetch-depth: 1
@@ -62,7 +62,7 @@ jobs:
 
       - name: Upload results and provenance
         if: always()
-        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        uses: actions/upload-artifact@330a01c490aca151604b8cf639adc76d48f6c5d4
         with:
           name: ios-ci-${{ env.TARGET_SHA }}
           path: build/ci-artifacts
