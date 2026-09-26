@@ -218,6 +218,28 @@ struct ServiceEventPayload: Codable, Equatable {
     }
 }
 
+public enum PumpStoreCorrectionCodec {
+    public static func encode(_ event: FillEvent) throws -> String {
+        String(decoding: try PumpStoreJSON.encoder().encode(FillEventPayload(event: event)), as: UTF8.self)
+    }
+
+    public static func encode(_ event: ServiceEvent) throws -> String {
+        String(decoding: try PumpStoreJSON.encoder().encode(ServiceEventPayload(event: event)), as: UTF8.self)
+    }
+
+    public static func decodeFillEvent(_ payload: String) throws -> FillEvent {
+        try PumpStoreJSON.decoder()
+            .decode(FillEventPayload.self, from: Data(payload.utf8))
+            .toFillEvent()
+    }
+
+    public static func decodeServiceEvent(_ payload: String) throws -> ServiceEvent {
+        try PumpStoreJSON.decoder()
+            .decode(ServiceEventPayload.self, from: Data(payload.utf8))
+            .toServiceEvent()
+    }
+}
+
 enum PumpStoreJSON {
     static func encoder() -> JSONEncoder {
         let encoder = JSONEncoder()
