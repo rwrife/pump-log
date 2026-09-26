@@ -32,7 +32,8 @@ let package = Package(
                 "PumpStore",
                 "PumpStoreTestSupport",
                 .product(name: "GRDB", package: "GRDB.swift"),
-            ]
+            ],
+            exclude: ["Fixtures/v1.sqlite"]
         ),
     ]
 )
