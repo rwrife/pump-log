@@ -63,21 +63,34 @@ try store.service.append(
         note: "fixture service"
     )
 )
-_ = try store.corrections.append(
-    fillEventID: fillID,
-    corrected: FillEvent(
-        id: fillID,
-        vehicleID: vehicleID,
-        occurredAt: date("2026-01-02T08:00:00Z"),
-        odometerDecimal: decimal("12346.00"),
-        volumeDecimal: decimal("10.375"),
-        volumeUnit: .usGallon,
-        costCents: 4875,
-        pumpClassification: .full,
-        note: "fixture corrected"
-    ),
-    correctedAt: date("2026-01-04T00:00:00Z")
+let correctedFill = FillEvent(
+    id: fillID,
+    vehicleID: vehicleID,
+    occurredAt: date("2026-01-02T08:00:00Z"),
+    odometerDecimal: decimal("12346.00"),
+    volumeDecimal: decimal("10.375"),
+    volumeUnit: .usGallon,
+    costCents: 4875,
+    pumpClassification: .full,
+    note: "fixture corrected"
 )
+let correctionPayload = try PumpStoreCorrectionCodec.encode(correctedFill)
+try store.db.write { db in
+    try db.execute(
+        sql: """
+        INSERT INTO corrections (
+            id, target_kind, fill_event_id, service_event_id, version,
+            corrected_payload_json, corrected_at
+        ) VALUES (?, 'fill_event', ?, NULL, 1, ?, ?)
+        """,
+        arguments: [
+            uuid("44444444-4444-4444-4444-444444444444").uuidString,
+            fillID.uuidString,
+            correctionPayload,
+            date("2026-01-04T00:00:00Z"),
+        ]
+    )
+}
 
 let applied = try pumpStoreAppliedSchemaVersion(store.db)
 guard applied == 1 else {

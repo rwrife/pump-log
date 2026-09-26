@@ -105,10 +105,15 @@ python3 Scripts/boot_simulator.py boot \
   --bootstatus-timeout 180 \
   2> >(tee -a "$artifact_dir/simulator-boot.log" >&2)
 
-phase="domain_tests"
+phase="domain_tests_pumpkit"
 xcrun swift test \
   --package-path Packages/PumpKit \
-  2>&1 | tee "$artifact_dir/domain-tests.log"
+  2>&1 | tee "$artifact_dir/domain-tests-pumpkit.log"
+
+phase="store_tests_pumpstore"
+xcrun swift test \
+  --package-path Packages/PumpStore \
+  2>&1 | tee "$artifact_dir/store-tests-pumpstore.log"
 
 phase="app_build"
 xcodebuild build \

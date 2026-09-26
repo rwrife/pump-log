@@ -14,16 +14,22 @@ concurrency:
 
 jobs:
   linux-package:
-    name: PumpKit (Linux swift test)
+    name: Pump packages (Linux swift test)
     runs-on: ubuntu-latest
     container:
       image: swift:6.2-noble
     steps:
       - uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683
+      - name: Install sqlite dev package for GRDB on Linux
+        run: |
+          apt-get update
+          apt-get install -y libsqlite3-dev
       - name: Swift version
         run: swift --version
-      - name: Run package tests
+      - name: Run PumpKit tests
         run: swift test --package-path Packages/PumpKit
+      - name: Run PumpStore tests
+        run: swift test --package-path Packages/PumpStore
       - name: Zero-network gate
         run: bash scripts/check_zero_network.sh
       - name: Gitignore keeps signing material out
