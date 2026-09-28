@@ -42,9 +42,9 @@ struct PumpKitTests {
         #expect(PumpKit.domain == "PumpKit")
     }
 
-    @Test("milestone marker reflects the economy engine milestone")
+    @Test("milestone marker reflects the cost ledger engine milestone")
     func milestoneMarker() {
-        #expect(PumpKit.milestone == "M3-economy-engine")
+        #expect(PumpKit.milestone == "M4-cost-ledger-engine")
     }
 }
 
