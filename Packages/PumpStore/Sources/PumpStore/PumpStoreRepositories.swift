@@ -226,9 +226,13 @@ public struct GRDBCorrectionRepository: CorrectionRepository {
                 return original
             }
             do {
-                return try PumpStoreJSON.decoder()
+                var resolved = try PumpStoreJSON.decoder()
                     .decode(FillEventPayload.self, from: Data(correction.correctedPayloadJSON.utf8))
                     .toFillEvent()
+                resolved.id = original.id
+                resolved.vehicleID = original.vehicleID
+                resolved.occurredAt = original.occurredAt
+                return resolved
             } catch {
                 throw PumpStoreError.correctionPayloadCorrupt(table: "fill_events", id: id, underlying: String(describing: error))
             }
@@ -245,9 +249,13 @@ public struct GRDBCorrectionRepository: CorrectionRepository {
                 return original
             }
             do {
-                return try PumpStoreJSON.decoder()
+                var resolved = try PumpStoreJSON.decoder()
                     .decode(ServiceEventPayload.self, from: Data(correction.correctedPayloadJSON.utf8))
                     .toServiceEvent()
+                resolved.id = original.id
+                resolved.vehicleID = original.vehicleID
+                resolved.occurredAt = original.occurredAt
+                return resolved
             } catch {
                 throw PumpStoreError.correctionPayloadCorrupt(table: "service_events", id: id, underlying: String(describing: error))
             }
@@ -302,9 +310,11 @@ public struct GRDBCorrectionRepository: CorrectionRepository {
 }
 
 private func requireVehicle(_ id: UUID, in db: Database) throws {
-    guard try Int.fetchOne(db, sql: "SELECT COUNT(*) FROM vehicles WHERE id = ?", arguments: [id.uuidString]) == 1 else {
+    guard let row = try Row.fetchOne(db, sql: "SELECT retired_at FROM vehicles WHERE id = ?", arguments: [id.uuidString]) else {
         throw PumpStoreError.parentNotFound(table: "vehicles", id: id)
     }
+    let retiredAt: Date? = row["retired_at"]
+    if retiredAt != nil { throw PumpStoreError.vehicleRetired(id: id) }
 }
 
 private func decodeVehicle(_ row: Row) -> Vehicle {

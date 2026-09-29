@@ -7,9 +7,12 @@
 
 /* Begin PBXBuildFile section */
 		A10000000000000000000101 /* PumpLogApp.swift in Sources */ = {isa = PBXBuildFile; fileRef = A10000000000000000000201 /* PumpLogApp.swift */; };
-		A10000000000000000000102 /* BootstrapHomeView.swift in Sources */ = {isa = PBXBuildFile; fileRef = A10000000000000000000202 /* BootstrapHomeView.swift */; };
+		A10000000000000000000102 /* AppRootView.swift in Sources */ = {isa = PBXBuildFile; fileRef = A10000000000000000000202 /* AppRootView.swift */; };
 		A10000000000000000000103 /* PumpLogLaunchTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = A10000000000000000000203 /* PumpLogLaunchTests.swift */; };
 		A10000000000000000000104 /* PumpKit in Frameworks */ = {isa = PBXBuildFile; productRef = A10000000000000000000801 /* PumpKit */; };
+		A10000000000000000000105 /* VehicleDetailView.swift in Sources */ = {isa = PBXBuildFile; fileRef = A10000000000000000000206 /* VehicleDetailView.swift */; };
+		A10000000000000000000106 /* EntrySheets.swift in Sources */ = {isa = PBXBuildFile; fileRef = A10000000000000000000207 /* EntrySheets.swift */; };
+		A10000000000000000000107 /* PumpStore in Frameworks */ = {isa = PBXBuildFile; productRef = A10000000000000000000803 /* PumpStore */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -24,17 +27,19 @@
 
 /* Begin PBXFileReference section */
 		A10000000000000000000201 /* PumpLogApp.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PumpLogApp.swift; sourceTree = "<group>"; };
-		A10000000000000000000202 /* BootstrapHomeView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BootstrapHomeView.swift; sourceTree = "<group>"; };
+		A10000000000000000000202 /* AppRootView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppRootView.swift; sourceTree = "<group>"; };
 		A10000000000000000000203 /* PumpLogLaunchTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PumpLogLaunchTests.swift; sourceTree = "<group>"; };
 		A10000000000000000000204 /* PumpLog.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = PumpLog.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		A10000000000000000000205 /* PumpLogUITests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = PumpLogUITests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
+		A10000000000000000000206 /* VehicleDetailView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = VehicleDetailView.swift; sourceTree = "<group>"; };
+		A10000000000000000000207 /* EntrySheets.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = EntrySheets.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
 		A10000000000000000000401 /* Frameworks */ = {
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
-			files = (A10000000000000000000104 /* PumpKit in Frameworks */,);
+			files = (A10000000000000000000104 /* PumpKit in Frameworks */, A10000000000000000000107 /* PumpStore in Frameworks */,);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
 		A10000000000000000000402 /* Frameworks */ = {
@@ -59,7 +64,9 @@
 			isa = PBXGroup;
 			children = (
 				A10000000000000000000201 /* PumpLogApp.swift */,
-				A10000000000000000000202 /* BootstrapHomeView.swift */,
+				A10000000000000000000202 /* AppRootView.swift */,
+				A10000000000000000000206 /* VehicleDetailView.swift */,
+				A10000000000000000000207 /* EntrySheets.swift */,
 			);
 			path = App;
 			sourceTree = "<group>";
@@ -93,7 +100,7 @@
 			buildRules = ();
 			dependencies = ();
 			name = PumpLog;
-			packageProductDependencies = (A10000000000000000000801 /* PumpKit */,);
+			packageProductDependencies = (A10000000000000000000801 /* PumpKit */, A10000000000000000000803 /* PumpStore */,);
 			productName = PumpLog;
 			productReference = A10000000000000000000204 /* PumpLog.app */;
 			productType = "com.apple.product-type.application";
@@ -134,7 +141,7 @@
 			knownRegions = (en, Base,);
 			mainGroup = A10000000000000000000500;
 			minimizedProjectReferenceProxies = 1;
-			packageReferences = (A10000000000000000000800 /* XCLocalSwiftPackageReference "Packages/PumpKit" */,);
+			packageReferences = (A10000000000000000000800 /* XCLocalSwiftPackageReference "Packages/PumpKit" */, A10000000000000000000802 /* XCLocalSwiftPackageReference "Packages/PumpStore" */,);
 			preferredProjectObjectVersion = 77;
 			productRefGroup = A10000000000000000000503 /* Products */;
 			projectDirPath = "";
@@ -157,7 +164,9 @@
 			buildActionMask = 2147483647;
 			files = (
 				A10000000000000000000101 /* PumpLogApp.swift in Sources */,
-				A10000000000000000000102 /* BootstrapHomeView.swift in Sources */,
+				A10000000000000000000102 /* AppRootView.swift in Sources */,
+				A10000000000000000000105 /* VehicleDetailView.swift in Sources */,
+				A10000000000000000000106 /* EntrySheets.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -258,10 +267,12 @@
 
 /* Begin XCLocalSwiftPackageReference section */
 		A10000000000000000000800 /* XCLocalSwiftPackageReference "Packages/PumpKit" */ = {isa = XCLocalSwiftPackageReference; relativePath = Packages/PumpKit;};
+		A10000000000000000000802 /* XCLocalSwiftPackageReference "Packages/PumpStore" */ = {isa = XCLocalSwiftPackageReference; relativePath = Packages/PumpStore;};
 /* End XCLocalSwiftPackageReference section */
 
 /* Begin XCSwiftPackageProductDependency section */
 		A10000000000000000000801 /* PumpKit */ = {isa = XCSwiftPackageProductDependency; productName = PumpKit;};
+		A10000000000000000000803 /* PumpStore */ = {isa = XCSwiftPackageProductDependency; productName = PumpStore;};
 /* End XCSwiftPackageProductDependency section */
 	};
 	rootObject = A10000000000000000000000 /* Project object */;

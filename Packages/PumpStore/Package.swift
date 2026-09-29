@@ -14,11 +14,12 @@ let package = Package(
     ],
     dependencies: [
         .package(url: "https://github.com/groue/GRDB.swift.git", exact: "7.11.1"),
+        .package(path: "../PumpKit"),
     ],
     targets: [
         .target(
             name: "PumpStore",
-            dependencies: [.product(name: "GRDB", package: "GRDB.swift")]
+            dependencies: [.product(name: "GRDB", package: "GRDB.swift"), "PumpKit"]
         ),
         .target(name: "PumpStoreTestSupport", dependencies: ["PumpStore"]),
         .executableTarget(
