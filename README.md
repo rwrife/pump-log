@@ -127,15 +127,17 @@ a current dependency — no foldable SDK APIs are used or assumed today.
 
 ## Current status & milestones
 
-**Status: native skeleton landed.** `PumpLog.xcodeproj`, the pure-Swift
-`Packages/PumpKit` package, pinned Linux + macOS CI, and the launch XCUITest
-smoke exist. No product features, archive, or TestFlight binary yet.
+**Status: issue #5 quick-log implemented locally on `feat/issue-5-quick-log`; Apple CI verification pending.**
+The app now opens an on-device SQLite store, supports vehicle add/retire, fill and
+service entry, versioned corrections, and resolved-fill MPG evidence. The pinned
+Apple build and XCUITest remain CI verification after publication; Linux package
+tests do not compile the SwiftUI target.
 
 1. ✅ Repo scaffold (docs, toolchain pin, backlog).
 2. ✅ Swift package domain core (PumpKit) + skeleton app + pinned CI (issue #1).
-3. GRDB store + migrations + fixtures (issue #2).
-4. Fill/service ledgers + economy/cost engines with unknown-safe semantics (issues #3–4).
-5. Accessible UI + workspace layout seam (issues #5–6).
+3. ✅ GRDB store + migrations + fixtures (issue #2).
+4. ✅ Fill/service ledgers + economy/cost engines with unknown-safe semantics (issues #3–4).
+5. Quick-log UI, ledgers and retirement (issue #5); broader workspace layout (issue #6) remains separate.
 6. Backup/export + TestFlight release with real evidence (issue #7).
 
 ## Development / build quickstart

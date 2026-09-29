@@ -133,6 +133,7 @@ public struct CorrectionRecord: Equatable, Sendable {
 
 public enum PumpStoreError: Error, Equatable, Sendable {
     case parentNotFound(table: String, id: UUID)
+    case vehicleRetired(id: UUID)
     case eventNotFound(table: String, id: UUID)
     case invalidDecimal(field: String, value: String)
     case correctionPayloadCorrupt(table: String, id: UUID, underlying: String)

@@ -4,7 +4,7 @@ import SwiftUI
 struct PumpLogApp: App {
     var body: some Scene {
         WindowGroup {
-            BootstrapHomeView()
+            AppRootView()
         }
     }
 }
