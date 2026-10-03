@@ -13,6 +13,8 @@
 		A10000000000000000000105 /* VehicleDetailView.swift in Sources */ = {isa = PBXBuildFile; fileRef = A10000000000000000000206 /* VehicleDetailView.swift */; };
 		A10000000000000000000106 /* EntrySheets.swift in Sources */ = {isa = PBXBuildFile; fileRef = A10000000000000000000207 /* EntrySheets.swift */; };
 		A10000000000000000000107 /* PumpStore in Frameworks */ = {isa = PBXBuildFile; productRef = A10000000000000000000803 /* PumpStore */; };
+		A10000000000000000000108 /* FuelWorkspaceLayout.swift in Sources */ = {isa = PBXBuildFile; fileRef = A10000000000000000000208 /* FuelWorkspaceLayout.swift */; };
+		A10000000000000000000109 /* StatsViews.swift in Sources */ = {isa = PBXBuildFile; fileRef = A10000000000000000000209 /* StatsViews.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -33,6 +35,8 @@
 		A10000000000000000000205 /* PumpLogUITests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = PumpLogUITests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
 		A10000000000000000000206 /* VehicleDetailView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = VehicleDetailView.swift; sourceTree = "<group>"; };
 		A10000000000000000000207 /* EntrySheets.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = EntrySheets.swift; sourceTree = "<group>"; };
+		A10000000000000000000208 /* FuelWorkspaceLayout.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FuelWorkspaceLayout.swift; sourceTree = "<group>"; };
+		A10000000000000000000209 /* StatsViews.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StatsViews.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -67,6 +71,8 @@
 				A10000000000000000000202 /* AppRootView.swift */,
 				A10000000000000000000206 /* VehicleDetailView.swift */,
 				A10000000000000000000207 /* EntrySheets.swift */,
+				A10000000000000000000208 /* FuelWorkspaceLayout.swift */,
+				A10000000000000000000209 /* StatsViews.swift */,
 			);
 			path = App;
 			sourceTree = "<group>";
@@ -167,6 +173,8 @@
 				A10000000000000000000102 /* AppRootView.swift in Sources */,
 				A10000000000000000000105 /* VehicleDetailView.swift in Sources */,
 				A10000000000000000000106 /* EntrySheets.swift in Sources */,
+				A10000000000000000000108 /* FuelWorkspaceLayout.swift in Sources */,
+				A10000000000000000000109 /* StatsViews.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
