@@ -24,8 +24,6 @@ struct EconomyStatsView: View {
 
     let stats: VehicleStats
     let workspaceLayout: any FuelWorkspaceLayout
-    @State private var pointSelection: Int?
-    @State private var exclusionSelection: Int?
 
     init(stats: VehicleStats, workspaceLayout: any FuelWorkspaceLayout = CompactSinglePaneFuelWorkspaceLayout()) {
         self.stats = stats
@@ -80,12 +78,15 @@ struct EconomyStatsView: View {
             }
         }
         .navigationTitle("Economy stats")
-        .accessibilityRotor("MPG points", selection: $pointSelection) {
+        // Rotor builder overload (iOS 15+): the selection-binding spelling does
+        // not exist in the iOS 26 SDK (verified by the Apple runner's compiler
+        // — only `accessibilityRotor(_:textRanges:)` matches 2-arg form).
+        .accessibilityRotor("MPG points") {
             ForEach(pointItems) { item in
                 AccessibilityRotorEntry(Text(verbatim: item.label), id: item.id)
             }
         }
-        .accessibilityRotor("Exclusions", selection: $exclusionSelection) {
+        .accessibilityRotor("Exclusions") {
             ForEach(exclusionItems) { item in
                 AccessibilityRotorEntry(Text(verbatim: item.label), id: item.id)
             }
@@ -125,10 +126,6 @@ struct CostStatsView: View {
 
     let stats: VehicleStats
     let workspaceLayout: any FuelWorkspaceLayout
-    // Int id: matches the documented `accessibilityRotor(_:selection:content:)`
-    // selection overload (Binding<Int?>); String selections rely on the
-    // data-driven variant with a keyPath we don't need here.
-    @State private var categorySelection: Int?
 
     init(stats: VehicleStats, workspaceLayout: any FuelWorkspaceLayout = CompactSinglePaneFuelWorkspaceLayout()) {
         self.stats = stats
@@ -167,7 +164,7 @@ struct CostStatsView: View {
                     }
                 }
                 .navigationTitle("Cost stats")
-                .accessibilityRotor("Categories", selection: $categorySelection) {
+                .accessibilityRotor("Categories") {
                     ForEach(categoryItems) { item in
                         AccessibilityRotorEntry(Text(verbatim: item.label), id: item.id)
                     }
