@@ -4,6 +4,7 @@ import PumpStore
 import SwiftUI
 
 struct VehicleDetailView: View {
+    @Environment(\.dismiss) private var dismiss
     let workflow: QuickLogWorkflow
     let vehicle: Vehicle
     // MainActor + Sendable for Swift 6 language mode: View implies Sendable
@@ -22,6 +23,7 @@ struct VehicleDetailView: View {
     @State private var selectedFill: FillEvent?
     @State private var selectedService: ServiceEvent?
     @State private var showingRetire = false
+    @State private var showingDelete = false
     @State private var errorText: String?
 
     init(workflow: QuickLogWorkflow, vehicle: Vehicle, onRetire: @escaping @MainActor @Sendable () -> Void, workspaceLayout: any FuelWorkspaceLayout = CompactSinglePaneFuelWorkspaceLayout()) {
@@ -105,6 +107,10 @@ struct VehicleDetailView: View {
                         .accessibilityIdentifier("vehicle.retire")
                 }
             }
+            Section("Permanent deletion") {
+                Button("Delete vehicle and its history", role: .destructive) { showingDelete = true }
+                    .accessibilityIdentifier("vehicle.delete")
+            }
         }
         .navigationTitle(vehicle.nickname)
         .toolbar {
@@ -119,6 +125,13 @@ struct VehicleDetailView: View {
         .sheet(item: $selectedFill) { fill in FillSheet(workflow: workflow, vehicleID: vehicle.id, original: fill, onSave: reload) }
         .sheet(isPresented: $showingService) { ServiceSheet(workflow: workflow, vehicleID: vehicle.id, original: nil, onSave: reload) }
         .sheet(item: $selectedService) { service in ServiceSheet(workflow: workflow, vehicleID: vehicle.id, original: service, onSave: reload) }
+        .sheet(isPresented: $showingDelete) {
+            TypedDeleteSheet(prompt: "Type DELETE \(vehicle.nickname) to remove this vehicle, fills, services and corrections permanently.", expected: "DELETE \(vehicle.nickname)") {
+                try workflow.store.deleteVehicle(id: vehicle.id)
+                onRetire() // refresh the fleet list
+                dismiss()
+            }
+        }
         .confirmationDialog("Retire \(vehicle.nickname)? History and corrections remain visible.", isPresented: $showingRetire) {
             Button("Retire vehicle", role: .destructive) {
                 do { try workflow.retireVehicle(id: vehicle.id); reload(); onRetire() }
