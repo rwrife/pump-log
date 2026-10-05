@@ -14,7 +14,7 @@ public enum PumpKit {
     public static let domain = "PumpKit"
 
     /// Current milestone marker consumed by the app bootstrap surface.
-    public static let milestone = "M4-cost-ledger-engine"
+    public static let milestone = "M5-stats-screens"
 }
 
 public enum PumpVolumeUnit: String, Codable, CaseIterable, Sendable {
@@ -135,6 +135,19 @@ public struct RollingEconomyWindow: Equatable, Sendable {
         self.totalMiles = totalMiles
         self.totalGallonsUS = totalGallonsUS
         self.measurement = measurement
+    }
+}
+
+extension RollingEconomyWindow {
+    /// Empty window for a vehicle with no pair evidence yet.
+    public static func empty(window: Int) -> RollingEconomyWindow {
+        RollingEconomyWindow(
+            pairWindow: window,
+            sampleCount: 0,
+            totalMiles: .zero,
+            totalGallonsUS: .zero,
+            measurement: .unknown
+        )
     }
 }
 

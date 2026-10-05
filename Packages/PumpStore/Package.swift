@@ -32,6 +32,7 @@ let package = Package(
             dependencies: [
                 "PumpStore",
                 "PumpStoreTestSupport",
+                "PumpKit",
                 .product(name: "GRDB", package: "GRDB.swift"),
             ],
             exclude: ["Fixtures/v1.sqlite"]
