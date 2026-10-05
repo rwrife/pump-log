@@ -46,6 +46,27 @@ struct BackupTests {
         #expect(try store.exportBackup() == original)
     }
 
+    @Test("tampered correction identity fails before replacement")
+    func tamperedCorrection() throws {
+        let store = try PumpStore.inMemory()
+        let v = Vehicle(nickname: "keep", createdAt: Date(timeIntervalSince1970: 10))
+        try store.vehicles.append(v)
+        let fill = FillEvent(vehicleID: v.id, occurredAt: Date(timeIntervalSince1970: 20), odometerDecimal: Decimal(100), volumeDecimal: Decimal(2), volumeUnit: .usGallon, costCents: 400, pumpClassification: .full)
+        try store.fills.append(fill)
+        _ = try store.corrections.append(fillEventID: fill.id, corrected: fill, correctedAt: Date(timeIntervalSince1970: 30))
+        let good = try store.exportBackup()
+        var json = try #require(JSONSerialization.jsonObject(with: good) as? [String: Any])
+        var corrections = try #require(json["corrections"] as? [[String: Any]])
+        let payloadText = try #require(corrections[0]["correctedPayloadJSON"] as? String)
+        var payload = try #require(JSONSerialization.jsonObject(with: Data(payloadText.utf8)) as? [String: Any])
+        payload["vehicleID"] = UUID().uuidString
+        corrections[0]["correctedPayloadJSON"] = String(decoding: try JSONSerialization.data(withJSONObject: payload), as: UTF8.self)
+        json["corrections"] = corrections
+        let bad = try JSONSerialization.data(withJSONObject: json)
+        #expect(throws: BackupError.self) { try store.restoreBackup(bad) }
+        #expect(try store.exportBackup() == good)
+    }
+
     @Test("CSV uses corrected values, RFC4180 quoting and stable ASCII decimals; deletion excludes data")
     func csvAndDeletion() throws {
         let store = try PumpStore.inMemory()

@@ -86,6 +86,7 @@ struct AppRootView: View {
 
 struct VehicleListView: View {
     let workflow: QuickLogWorkflow
+    @State private var navigationPath: [UUID] = []
     @State private var vehicles: [Vehicle] = []
     @State private var showingAdd = false
     @State private var errorText: String?
@@ -100,7 +101,7 @@ struct VehicleListView: View {
     @State private var showingWipe = false
 
     var body: some View {
-        NavigationStack {
+        NavigationStack(path: $navigationPath) {
             List {
                 Section("Your data · local files only") {
                     Button("Save JSON backup to Files") { exportBackup() }
@@ -184,8 +185,11 @@ struct VehicleListView: View {
     }
 
     private func reload() {
-        do { vehicles = try workflow.store.vehicles.allVehicles() }
-        catch { errorText = error.localizedDescription }
+        do {
+            vehicles = try workflow.store.vehicles.allVehicles()
+            let survivingIDs = Set(vehicles.map(\.id))
+            navigationPath.removeAll { !survivingIDs.contains($0) }
+        } catch { errorText = error.localizedDescription }
     }
 
     private func exportBackup() {

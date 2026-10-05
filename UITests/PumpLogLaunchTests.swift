@@ -30,7 +30,9 @@ final class PumpLogLaunchTests: XCTestCase {
         confirmation.tap(); confirmation.typeText("DELETE Wagon")
         XCTAssertTrue(app.buttons["delete.commit"].isEnabled)
         app.buttons["delete.commit"].tap()
-        XCTAssertFalse(wagon.waitForExistence(timeout: 2))
+        let wagonGone = XCTNSPredicateExpectation(predicate: NSPredicate(format: "exists == false"), object: wagon)
+        XCTAssertEqual(XCTWaiter.wait(for: [wagonGone], timeout: 5), .completed,
+                       "Deleted vehicle still visible. \(app.debugDescription)")
         XCTAssertTrue(app.buttons["data.wipe"].waitForExistence(timeout: 5))
         app.buttons["data.wipe"].tap()
         let all = app.textFields["delete.confirmation"]
