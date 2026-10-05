@@ -26,7 +26,13 @@ struct AppRootView: View {
         let support = try fileManager.url(for: .applicationSupportDirectory, in: .userDomainMask, appropriateFor: nil, create: true)
 #if DEBUG
         let testing = ProcessInfo.processInfo.arguments.contains("-ui-testing")
-        let directory = testing ? support.appendingPathComponent("UITests", isDirectory: true) : support
+        // A UI journey owns one database through relaunches; separate journeys
+        // must not accidentally pick an older vehicle from a shared store.
+        let testStore = ProcessInfo.processInfo.environment["PUMPLOG_UI_TEST_STORE"].flatMap(UUID.init(uuidString:))
+        let directory = testing
+            ? support.appendingPathComponent("UITests", isDirectory: true)
+                .appendingPathComponent(testStore?.uuidString ?? "default", isDirectory: true)
+            : support
 #else
         let directory = support
 #endif

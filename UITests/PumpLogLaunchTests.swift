@@ -7,6 +7,7 @@ final class PumpLogLaunchTests: XCTestCase {
     func testQuickLogCorrectionServiceRetireAndRelaunch() throws {
         let app = XCUIApplication()
         app.launchArguments = ["-ui-testing", "-reset-ui-store"]
+        app.launchEnvironment["PUMPLOG_UI_TEST_STORE"] = UUID().uuidString
         app.launch()
         XCTAssertTrue(app.buttons["vehicle.add"].waitForExistence(timeout: 10))
         app.buttons["vehicle.add"].tap()
@@ -14,7 +15,7 @@ final class PumpLogLaunchTests: XCTestCase {
         XCTAssertTrue(name.waitForExistence(timeout: 5))
         name.tap(); name.typeText("Wagon")
         app.buttons["vehicle.save"].tap()
-        let vehicle = app.buttons.matching(NSPredicate(format: "identifier BEGINSWITH 'vehicle.row.'")).firstMatch
+        let vehicle = app.buttons.matching(NSPredicate(format: "identifier BEGINSWITH 'vehicle.row.' AND label CONTAINS 'Wagon'")).firstMatch
         XCTAssertTrue(vehicle.waitForExistence(timeout: 5))
         vehicle.tap()
 
@@ -80,13 +81,17 @@ final class PumpLogLaunchTests: XCTestCase {
         XCTAssertTrue(retained.label.contains("Retired"))
         retained.tap()
         XCTAssertTrue(app.staticTexts["economy.mpg"].label.contains("10 MPG"))
-        XCTAssertTrue(app.buttons.matching(NSPredicate(format: "identifier BEGINSWITH 'service.'")).firstMatch.label.contains("Transmission"))
+        let retainedService = app.buttons.matching(NSPredicate(format: "identifier BEGINSWITH 'service.'")).firstMatch
+        for _ in 0..<5 where !retainedService.exists { app.swipeUp() }
+        XCTAssertTrue(retainedService.waitForExistence(timeout: 5))
+        XCTAssertTrue(retainedService.label.contains("Transmission"))
     }
 
     @MainActor
     func testStatsScreensShowEvidenceRotorsAndStatedCoverage() throws {
         let app = XCUIApplication()
         app.launchArguments = ["-ui-testing", "-reset-ui-store"]
+        app.launchEnvironment["PUMPLOG_UI_TEST_STORE"] = UUID().uuidString
         app.launch()
         XCTAssertTrue(app.buttons["vehicle.add"].waitForExistence(timeout: 10))
         app.buttons["vehicle.add"].tap()
@@ -94,7 +99,7 @@ final class PumpLogLaunchTests: XCTestCase {
         XCTAssertTrue(name.waitForExistence(timeout: 5))
         name.tap(); name.typeText("Commuter")
         app.buttons["vehicle.save"].tap()
-        let vehicle = app.buttons.matching(NSPredicate(format: "identifier BEGINSWITH 'vehicle.row.'")).firstMatch
+        let vehicle = app.buttons.matching(NSPredicate(format: "identifier BEGINSWITH 'vehicle.row.' AND label CONTAINS 'Commuter'")).firstMatch
         XCTAssertTrue(vehicle.waitForExistence(timeout: 5))
         vehicle.tap()
 
