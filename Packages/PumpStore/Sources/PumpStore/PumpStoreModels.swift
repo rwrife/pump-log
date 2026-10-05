@@ -13,7 +13,7 @@ public enum PumpClassification: String, Codable, CaseIterable, Sendable {
     case unknown
 }
 
-public struct Vehicle: Equatable, Sendable {
+public struct Vehicle: Codable, Equatable, Sendable {
     public var id: UUID
     public var nickname: String
     public var createdAt: Date
@@ -103,7 +103,7 @@ public enum CorrectionTargetKind: String, Codable, CaseIterable, Sendable {
     case serviceEvent = "service_event"
 }
 
-public struct CorrectionRecord: Equatable, Sendable {
+public struct CorrectionRecord: Codable, Equatable, Sendable {
     public var id: UUID
     public var targetKind: CorrectionTargetKind
     public var fillEventID: UUID?
