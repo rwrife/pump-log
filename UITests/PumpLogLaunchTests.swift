@@ -41,6 +41,9 @@ final class PumpLogLaunchTests: XCTestCase {
         servicePrice.tap(); servicePrice.typeText("45.50")
         app.buttons["service.save"].tap()
         let service = app.buttons.matching(NSPredicate(format: "identifier BEGINSWITH 'service.'")).firstMatch
+        // Stats links lengthen the List; the service section is lazy until
+        // scrolled into view. Keep the query scoped to ledger row identifiers.
+        for _ in 0..<5 where !service.exists { app.swipeUp() }
         XCTAssertTrue(service.waitForExistence(timeout: 5))
         service.tap()
         let editedCategory = app.textFields["service.category"]
@@ -110,6 +113,7 @@ final class PumpLogLaunchTests: XCTestCase {
         // Decimal-pad fields have no return key; the keyboard toolbar Save is
         // hittable above the keyboard (keyboard-toolbar pitfall).
         app.buttons["fill.keyboard.save"].tap()
+        assertFillSaved(app)
 
         // A service with a user-owned rule surfaces in cost stats and (via
         // category totals) proves the cost ledger path.
@@ -121,7 +125,7 @@ final class PumpLogLaunchTests: XCTestCase {
         app.buttons["service.save"].tap()
 
         // Economy stats screen.
-        let economyNav = app.buttons["stats.economy"]
+        let economyNav = app.buttons["stats-link.economy"]
         for _ in 0..<5 where !economyNav.exists { app.swipeUp() }
         XCTAssertTrue(economyNav.waitForExistence(timeout: 5))
         economyNav.tap()
@@ -139,7 +143,7 @@ final class PumpLogLaunchTests: XCTestCase {
         app.navigationBars.buttons.element(boundBy: 0).tap()
 
         // Cost stats screen: coverage % is stated in text, never implied.
-        let costNav = app.buttons["stats.cost"]
+        let costNav = app.buttons["stats-link.cost"]
         for _ in 0..<5 where !costNav.exists { app.swipeUp() }
         XCTAssertTrue(costNav.waitForExistence(timeout: 5))
         costNav.tap()
@@ -167,5 +171,18 @@ final class PumpLogLaunchTests: XCTestCase {
         let amount = app.textFields["fill.price"]
         amount.tap(); amount.typeText(price)
         app.buttons["fill.save"].tap()
+        assertFillSaved(app)
+    }
+
+    @MainActor
+    private func assertFillSaved(_ app: XCUIApplication) {
+        let alert = app.alerts["Could not save fill"]
+        XCTAssertFalse(alert.exists, "Fill save failed: \(alert.debugDescription)")
+        let closed = XCTNSPredicateExpectation(
+            predicate: NSPredicate(format: "exists == false"),
+            object: app.textFields["fill.odometer"]
+        )
+        XCTAssertEqual(XCTWaiter.wait(for: [closed], timeout: 5), .completed,
+                       "Fill sheet did not close. Alert: \(app.alerts.firstMatch.debugDescription)")
     }
 }

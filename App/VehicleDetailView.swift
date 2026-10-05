@@ -52,17 +52,18 @@ struct VehicleDetailView: View {
                 NavigationLink { EconomyStatsView(stats: economyStats, workspaceLayout: workspaceLayout) } label: {
                     Text("Economy stats")
                 }
-                .accessibilityIdentifier("stats.economy")
+                .accessibilityIdentifier("stats-link.economy")
                 NavigationLink { CostStatsView(stats: economyStats, workspaceLayout: workspaceLayout) } label: {
                     Text("Cost stats")
                 }
-                .accessibilityIdentifier("stats.cost")
+                .accessibilityIdentifier("stats-link.cost")
             }
             if let stats, !stats.serviceDue.isEmpty {
                 Section("Service due windows") {
                     ForEach(Array(stats.serviceDue.enumerated()), id: \.element.category) { index, due in
                         Text(StatsPresentation.serviceDueLabel(due))
-                            .accessibilityIdentifier("service.due.\(index)")
+                            // service.due.* would collide with service.* row queries.
+                            .accessibilityIdentifier("servicedue.row.\(index)")
                     }
                 }
             }
