@@ -6,6 +6,7 @@ final class PumpLogLaunchTests: XCTestCase {
     @MainActor
     func testTypedDeletionLeavesNoVehicleAndDataActionsRemain() throws {
         let app = XCUIApplication()
+        let name = "DeleteProbe-\(UUID().uuidString.prefix(8))"
         app.launchArguments = ["-ui-testing", "-reset-ui-store"]
         app.launchEnvironment["PUMPLOG_UI_TEST_STORE"] = UUID().uuidString
         app.launch()
@@ -15,10 +16,12 @@ final class PumpLogLaunchTests: XCTestCase {
         XCTAssertTrue(app.buttons["data.service.csv"].exists)
         app.buttons["vehicle.add"].tap()
         app.textFields["vehicle.name"].tap()
-        app.textFields["vehicle.name"].typeText("Wagon")
+        app.textFields["vehicle.name"].typeText(name)
         app.buttons["vehicle.save"].tap()
-        let wagon = app.buttons.matching(NSPredicate(format: "identifier BEGINSWITH 'vehicle.row.' AND label CONTAINS 'Wagon'")).firstMatch
+        let wagon = app.buttons.matching(NSPredicate(format: "identifier BEGINSWITH 'vehicle.row.' AND label CONTAINS %@", name)).firstMatch
         XCTAssertTrue(wagon.waitForExistence(timeout: 5))
+        // Capture this journey's exact row ID, not a shared nickname.
+        let createdRow = app.buttons[wagon.identifier]
         wagon.tap()
         let delete = app.buttons["vehicle.delete"]
         for _ in 0..<6 where !delete.exists { app.swipeUp() }
@@ -27,10 +30,10 @@ final class PumpLogLaunchTests: XCTestCase {
         let confirmation = app.textFields["delete.confirmation"]
         XCTAssertTrue(confirmation.waitForExistence(timeout: 5))
         XCTAssertFalse(app.buttons["delete.commit"].isEnabled)
-        confirmation.tap(); confirmation.typeText("DELETE Wagon")
+        confirmation.tap(); confirmation.typeText("DELETE \(name)")
         XCTAssertTrue(app.buttons["delete.commit"].isEnabled)
         app.buttons["delete.commit"].tap()
-        let wagonGone = XCTNSPredicateExpectation(predicate: NSPredicate(format: "exists == false"), object: wagon)
+        let wagonGone = XCTNSPredicateExpectation(predicate: NSPredicate(format: "exists == false"), object: createdRow)
         XCTAssertEqual(XCTWaiter.wait(for: [wagonGone], timeout: 5), .completed,
                        "Deleted vehicle still visible. \(app.debugDescription)")
         XCTAssertTrue(app.buttons["data.wipe"].waitForExistence(timeout: 5))
@@ -42,6 +45,9 @@ final class PumpLogLaunchTests: XCTestCase {
         XCTAssertTrue(app.buttons["delete.commit"].isEnabled)
         app.buttons["delete.commit"].tap()
         XCTAssertTrue(app.buttons["data.backup"].waitForExistence(timeout: 5))
+        let anyVehicle = app.buttons.matching(NSPredicate(format: "identifier BEGINSWITH 'vehicle.row.'")).firstMatch
+        let allGone = XCTNSPredicateExpectation(predicate: NSPredicate(format: "exists == false"), object: anyVehicle)
+        XCTAssertEqual(XCTWaiter.wait(for: [allGone], timeout: 5), .completed)
     }
 
     @MainActor
