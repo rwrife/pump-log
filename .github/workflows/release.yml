@@ -1,0 +1,116 @@
+name: Manual TestFlight release
+
+on:
+  workflow_dispatch:
+    inputs:
+      upload:
+        description: Upload to TestFlight and wait for processing (false archives/exports only)
+        type: boolean
+        default: false
+        required: true
+
+permissions:
+  contents: read
+
+concurrency:
+  group: pump-log-testflight
+  cancel-in-progress: false
+
+jobs:
+  testflight:
+    runs-on: macos-15
+    timeout-minutes: 65
+    defaults:
+      run:
+        shell: bash
+    env:
+      ASC_KEY_ID: ${{ secrets.ASC_KEY_ID }}
+      ASC_ISSUER_ID: ${{ secrets.ASC_ISSUER_ID }}
+      ASC_TEAM_ID: ${{ secrets.ASC_TEAM_ID }}
+      RELEASE_RUN_URL: ${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}
+    steps:
+      - uses: actions/checkout@fbc6f3992d24b796d5a048ff273f7fcc4a7b6c09
+        with:
+          ref: ${{ github.sha }}
+          persist-credentials: false
+      - name: Verify source and release helpers
+        run: |
+          set -euo pipefail
+          test "$(git rev-parse HEAD)" = "$GITHUB_SHA"
+          python3 -m unittest discover -s Scripts/tests -v
+          bash scripts/check_zero_network.sh
+          mkdir -p build/release
+          printf 'Source SHA: %s\nBuild number: %s\n' "$GITHUB_SHA" "$GITHUB_RUN_NUMBER" >> "$GITHUB_STEP_SUMMARY"
+      - name: Select exact toolchain (missing pin is an acceptance blocker)
+        id: toolchain
+        timeout-minutes: 3
+        run: |
+          set -euo pipefail
+          selected=$(python3 Scripts/select_xcode.py --toolchain toolchain.json)
+          printf 'DEVELOPER_DIR=%s\n' "$selected" >> "$GITHUB_ENV"
+      - name: Materialize mode-600 API key
+        env:
+          ASC_KEY_P8: ${{ secrets.ASC_KEY_P8 }}
+        run: python3 Scripts/release_helpers.py key "$RUNNER_TEMP/pump-log-asc"
+      - name: Signed archive
+        id: archive
+        timeout-minutes: 25
+        run: |
+          set -euo pipefail
+          xcodebuild -version
+          xcrun --sdk iphoneos --show-sdk-version
+          xcodebuild archive -project PumpLog.xcodeproj -scheme PumpLog \
+            -configuration Release -destination 'generic/platform=iOS' \
+            -archivePath "$RUNNER_TEMP/PumpLog.xcarchive" \
+            -allowProvisioningUpdates \
+            -authenticationKeyPath "$RUNNER_TEMP/pump-log-asc/AuthKey.p8" \
+            -authenticationKeyID "$ASC_KEY_ID" -authenticationKeyIssuerID "$ASC_ISSUER_ID" \
+            DEVELOPMENT_TEAM="$ASC_TEAM_ID" CODE_SIGN_STYLE=Automatic \
+            CODE_SIGNING_ALLOWED=YES CODE_SIGNING_REQUIRED=YES \
+            CURRENT_PROJECT_VERSION="$GITHUB_RUN_NUMBER"
+          python3 Scripts/release_helpers.py verify "$RUNNER_TEMP/PumpLog.xcarchive/Products/Applications/PumpLog.app"
+          codesign --verify --deep --strict "$RUNNER_TEMP/PumpLog.xcarchive/Products/Applications/PumpLog.app"
+      - name: Export and optionally upload
+        id: export
+        timeout-minutes: 15
+        env:
+          UPLOAD: ${{ inputs.upload }}
+        run: |
+          set -euo pipefail
+          python3 Scripts/release_helpers.py options "$RUNNER_TEMP/PumpLog-ExportOptions.plist" --upload "$UPLOAD"
+          xcodebuild -exportArchive -archivePath "$RUNNER_TEMP/PumpLog.xcarchive" \
+            -exportPath "$RUNNER_TEMP/pump-log-export" \
+            -exportOptionsPlist "$RUNNER_TEMP/PumpLog-ExportOptions.plist" \
+            -allowProvisioningUpdates \
+            -authenticationKeyPath "$RUNNER_TEMP/pump-log-asc/AuthKey.p8" \
+            -authenticationKeyID "$ASC_KEY_ID" -authenticationKeyIssuerID "$ASC_ISSUER_ID"
+      - name: Await real processed build
+        id: processing
+        if: ${{ inputs.upload }}
+        timeout-minutes: 17
+        run: python3 Scripts/asc_poll.py
+      - name: Remove API key material
+        if: always()
+        timeout-minutes: 1
+        run: rm -f "$RUNNER_TEMP/pump-log-asc/AuthKey.p8"
+      - name: Record actual stage outcomes
+        if: always()
+        env:
+          TOOLCHAIN: ${{ steps.toolchain.outcome }}
+          ARCHIVE: ${{ steps.archive.outcome }}
+          EXPORT: ${{ steps.export.outcome }}
+          PROCESSING: ${{ steps.processing.outcome }}
+        run: |
+          {
+            printf '\n## Release stages\nRun: %s\n' "$RELEASE_RUN_URL"
+            printf '\nToolchain: %s\nArchive: %s\nExport/upload: %s\nProcessing: %s\n' "$TOOLCHAIN" "$ARCHIVE" "$EXPORT" "$PROCESSING"
+            printf '\nOnly processed-build.json is live TestFlight evidence; skipped/failed stages are not verified. No public App Store submission is performed.\n'
+          } >> "$GITHUB_STEP_SUMMARY"
+      - name: Preserve non-secret evidence (no keys/profiles/archive logs)
+        if: always()
+        uses: actions/upload-artifact@330a01c490aca151604b8cf639adc76d48f6c5d4
+        with:
+          name: release-evidence-${{ github.run_id }}
+          path: build/release/*.json
+          if-no-files-found: warn
+          retention-days: 14
